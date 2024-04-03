@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+#
+# Script to download transaction data using the Paypal API
+# Dependencies: curl, date
+#
+# Usage:
+#   paypaljson --help
 
 # Regular expression matching against a string
 # Usage:
@@ -33,6 +39,9 @@ TRANSACTIONS_END=$(_date +1d)
 TRANSACTIONS_PAGE="1"
 TRANSACTIONS_LENGTH="500"
 TRANSACTIONS_TYPE=""
+TRANSACTIONS_STATUS=""
+TRANSACTIONS_CURRENCY=""
+PAYMENT_METHOD=""
 
 _help() {
   cat <<EOF
@@ -40,7 +49,7 @@ _help() {
   ${SCRIPT_NAME}
 
 
-    This script downloads JSON data using the Paypal API
+    This script downloads transaction data using the Paypal API
 
     Paypal API Documentation:
     https://developer.paypal.com/docs/api/transaction-search/v1
@@ -83,6 +92,16 @@ _help() {
 
     --type               Filter the type of transactions using a transaction code
                          https://developer.paypal.com/docs/transaction-search/transaction-event-codes/
+
+    --status             Filter the transactions by status code.
+                         Values: D | P | S | V
+                         D = denied; P = pending; S = successfully complete; V = reversed;
+
+    --currency           Filter the transactions by ISO-4217 currency code
+                         https://developer.paypal.com/api/rest/reference/currency-codes/
+
+    --payment-method     Filter the transactions by payment method
+                         Values: CREDITCARD | DEBITCARD
 
 EOF
 }
@@ -130,6 +149,9 @@ _options() {
             --page) TRANSACTIONS_PAGE="${VALUE}";;
             --count|--length) TRANSACTIONS_LENGTH="${VALUE}";;
             --type) TRANSACTIONS_TYPE="${VALUE}";;
+            --status) TRANSACTIONS_STATUS="${VALUE}";;
+            --currency) TRANSACTIONS_CURRENCY="${VALUE}";;
+            --payment-method) PAYMENT_METHOD="${VALUE}";;
             # Catch all for invalid options
             *) _help; exit;;
         esac
@@ -146,21 +168,31 @@ _oauth() {
 # Extract the access token from the Oauth request
 _token() {
     TOKEN=$(_oauth)
+    # Remove everything in the response before the token
     TOKEN=${TOKEN/*access_token\":\"/}
+    # Remove everything in the response after the token
     printf "%s" "${TOKEN/\"*/}"
 }
 
 _transactions() {
-    START="start_date=${TRANSACTIONS_START}"
-    END="&end_date=${TRANSACTIONS_END}"
-    LENGTH="&page_size=${TRANSACTIONS_LENGTH}"
-    PAGE="&page=${TRANSACTIONS_PAGE}"
-    TOKEN=$(_token)
-    [ -z "${TRANSACTIONS_TYPE}" ] && TYPE="" || TYPE="&transaction_type=${TRANSACTIONS_TYPE}"
+    [ -n "${TRANSACTIONS_TYPE}" ] && TRANSACTIONS_TYPE="&transaction_type=${TRANSACTIONS_TYPE}"
+    [ -n "${TRANSACTIONS_STATUS}" ] && TRANSACTIONS_STATUS="&transaction_status=${TRANSACTIONS_STATUS}"
+    [ -n "${TRANSACTIONS_CURRENCY}" ] && TRANSACTIONS_CURRENCY="&transaction_currency=${TRANSACTIONS_CURRENCY}"
+    [ -n "${PAYMENT_METHOD}" ] && PAYMENT_METHOD="&payment_instrument_type=${PAYMENT_METHOD}"
 
-    curl -s \
-        -H "Authorization: Bearer ${TOKEN}" \
-        "https://api.paypal.com/v1/reporting/transactions?${START}${END}${LENGTH}${PAGE}&fields=all${TYPE}"
+    URL=$(printf '%s' \
+        "https://api.paypal.com/v1/reporting/transactions?"\
+        "page=${TRANSACTIONS_PAGE}"\
+        "&page_size=${TRANSACTIONS_LENGTH}"\
+        "&start_date=${TRANSACTIONS_START}"\
+        "&end_date=${TRANSACTIONS_END}"\
+        "${TRANSACTIONS_TYPE}"\
+        "${TRANSACTIONS_STATUS}"\
+        "${TRANSACTIONS_CURRENCY}"\
+        "${PAYMENT_METHOD}"\
+        "&fields=all")
+
+    curl -s -H "Authorization: Bearer $(_token)" "${URL}"
 }
 
 _options "$@"
