@@ -24,9 +24,12 @@ Definitely not the most friendly, but it seems to be working.
 
 **Shopify custom pixel**
 
-Create a [Shopify custom pixel](https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/code) using the code in [shopify-pixel.js](./shopify-pixel.js). Be sure to replace the generic `GTM-XXXXXXX` value with your Google Tag Manager container ID. 
+Create a [Shopify custom pixel](https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/code) using the code in [shopify-pixel.js](./shopify-pixel.js). 
+> [!IMPORTANT]
+> Be sure to replace the generic `GTM-XXXXXXX` value with your Google Tag Manager container ID. 
 
-> Note:<br />Your theme may override functionality, which may interfere with the execution of default Shopify events _(in my case, our theme had custom search and cart functionality, which prevented the related Shopify events from firing)_. Be sure to test your theme.
+> [!NOTE]
+> Your theme may override functionality, which may interfere with the execution of default Shopify events _(in my case, our theme had custom search and cart functionality, which prevented the related Shopify events from firing)_. Be sure to test your theme.
 
 <br />
 
@@ -34,13 +37,16 @@ Create a [Shopify custom pixel](https://help.shopify.com/en/manual/promoting-mar
 
 Import the provided [GTM-XXXXXXX_workspace.json](./GTM-XXXXXXX_workspace.json) file into your Google Tag Manager container. 
 
-Be sure to update the provided variables _(Google Tag ID and Google Analytics property ID)_. Links to relevant documentation have been provided in the "notes" section for many of the provided container elements.
+> [!IMPORTANT]
+> Be sure to update the provided variables _(Google Tag ID and Google Analytics property ID)_.<br />
+> Links to relevant documentation have been provided in the "notes" section for many of the provided container elements.
 
-> _Refer to the [Google documentation](https://support.google.com/tagmanager/answer/6106997?hl=en) for information on importing and exporting container data._
+> [!NOTE]
+> Refer to the [Google documentation](https://support.google.com/tagmanager/answer/6106997?hl=en) for information on importing and exporting container data.
 
 <br />
 
 **Optional - Install Google Tag Manager to your theme**
 
-There may be certain scenarios where you may need access to data the default Shopify events do not provide. In these cases, you may want to install Google Tag Manager into your theme the traditional way _(refer to the [Google documentation](https://support.google.com/tagmanager/answer/6103696?hl=en))_.
+There may be certain scenarios where you may need access to data that default Shopify events do not provide. In these cases, you may want to install Google Tag Manager into your theme the traditional way _(refer to the [Google documentation](https://support.google.com/tagmanager/answer/6103696?hl=en))_.
 
