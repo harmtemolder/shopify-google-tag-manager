@@ -20,19 +20,14 @@ Create a [Shopify custom pixel](https://help.shopify.com/en/manual/promoting-mar
 
 ### Prepare Google Tag Manager
 
-Import the provided [GTM-XXXXXXX_workspace.json](./GTM-XXXXXXX_workspace.json) file into your Google Tag Manager container.
+1. Add a GA4 tag to your Google Tag Manager container.
+2. Add triggers for the following events:
+   - `purchase`
 
-> [!IMPORTANT]
-> Be sure to update the provided `Google - Tag ID` and `Google - Analytics Property ID` variables.<br />
-> Links to relevant documentation have been provided in the "Notes" section for many of the provided container elements.
-
-> [!NOTE]
-> Refer to the [Google documentation](https://support.google.com/tagmanager/answer/6106997?hl=en) for information on importing and exporting container data.
-
-### Optional - Install Google Tag Manager to your theme
+### Optional: Add more `dataLayer.push` calls to your theme
 
 There may be certain scenarios where you may need access to data that default Shopify events do not provide. In these cases, you may want to install Google Tag Manager into your theme the traditional way. (Refer to the [Google documentation](https://support.google.com/tagmanager/answer/6103696?hl=en).)
 
 ## Credits
 
-- All credits go to <https://github.com/lstellway/snippets>
+- All credits for the foundation of this pixel go to <https://github.com/lstellway/snippets>
