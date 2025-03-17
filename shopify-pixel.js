@@ -71,9 +71,10 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
 /**
  * Convert Shopify productVariant to GA4 item
  * @param {object} Shopify productVariant
+ * @param {number} index
  * @returns {object} GA4 item
  */
-function shopifyProductVariantToGA4Item(productVariant) {
+function shopifyProductVariantToGA4Item(productVariant, index) {
   var data = {
     affiliation: "",
     item_brand: productVariant.product.vendor,
@@ -90,6 +91,10 @@ function shopifyProductVariantToGA4Item(productVariant) {
     item_variant_sku: productVariant.sku,
     price: productVariant.price.amount,
   };
+
+  if (index) {
+    data.index = index;
+  }
 
   if (productVariant.title) {
     var titleSplit = productVariant.title.split("/");
@@ -346,6 +351,36 @@ analytics.subscribe("product_viewed", (event) => {
       items: [shopifyProductVariantToGA4Item(productVariant)],
     },
     event: "view_item",
+    event_id: event.id,
+    event_timestamp: event.timestamp,
+    page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
+    page_title: event.context.document.title,
+    shopify_client_id: event.clientId,
+    shopify_event_name: event.name,
+    shopify_event_seq: event.seq,
+    shopify_event_type: event.type,
+  };
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push collection_viewed as view_item_list
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/collection_viewed
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_item_list
+ */
+analytics.subscribe("collection_viewed", (event) => {
+  var collection = event.data.collection || {};
+
+  var data = {
+    ecommerce: {
+      currency: collection.productVariants[0].price.currencyCode || "",
+      item_list_id: collection.id,
+      item_list_name: collection.title,
+      items: collection.productVariants.map(shopifyProductVariantToGA4Item),
+    },
+    event: "view_item_list",
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
