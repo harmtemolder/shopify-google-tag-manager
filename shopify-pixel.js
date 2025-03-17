@@ -69,6 +69,40 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
 }
 
 /**
+ * Convert Shopify productVariant to GA4 item
+ * @param {object} Shopify productVariant
+ * @returns {object} GA4 item
+ */
+function shopifyProductVariantToGA4Item(productVariant) {
+  var data = {
+    affiliation: "",
+    item_brand: productVariant.product.vendor,
+    item_category: productVariant.product.type,
+    item_category2: "",
+    item_category3: "",
+    item_category4: "",
+    item_category5: "",
+    item_id: productVariant.product.id,
+    item_name: productVariant.product.title,
+    item_type: productVariant.product.type,
+    item_variant: productVariant.title,
+    item_variant_id: productVariant.id,
+    item_variant_sku: productVariant.sku,
+    price: productVariant.price.amount,
+  };
+
+  if (productVariant.title) {
+    var titleSplit = productVariant.title.split("/");
+    data.item_category2 = (titleSplit[0] || "").trim();
+    data.item_category3 = (titleSplit[1] || "").trim();
+    data.item_category4 = (titleSplit[2] || "").trim();
+    data.item_category5 = (titleSplit[3] || "").trim();
+  }
+
+  return data;
+}
+
+/**
  * Convert Shopify item to GA4 item for cart events
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_added_to_cart
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_to_cart_item
@@ -76,31 +110,11 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
  * @returns {object} - The GA4 item object
  */
 function shopifyCartLineToGA4Item(cartLine) {
-  var data = {
-    affiliation: "",
-    item_brand: cartLine.merchandise.product.vendor,
-    item_category: cartLine.merchandise.product.type,
-    item_category2: "",
-    item_category3: "",
-    item_category4: "",
-    item_category5: "",
-    item_id: cartLine.merchandise.product.id,
-    item_name: cartLine.merchandise.product.title,
-    item_type: cartLine.merchandise.product.type,
-    item_variant: cartLine.merchandise.title,
-    item_variant_id: cartLine.merchandise.id,
-    item_variant_sku: cartLine.merchandise.sku,
-    price: cartLine.cost.totalAmount.amount,
-    quantity: cartLine.quantity,
-  };
+  var productVariant = cartLine.merchandise;
+  var data = shopifyProductVariantToGA4Item(productVariant);
 
-  if (cartLine.merchandise.title) {
-    var titleSplit = cartLine.merchandise.title.split("/");
-    data.item_category2 = (titleSplit[0] || "").trim();
-    data.item_category3 = (titleSplit[1] || "").trim();
-    data.item_category4 = (titleSplit[2] || "").trim();
-    data.item_category5 = (titleSplit[3] || "").trim();
-  }
+  data.price = cartLine.cost.totalAmount.amount;
+  data.quantity = cartLine.quantity;
 
   return data;
 }
@@ -303,6 +317,35 @@ analytics.subscribe("product_added_to_cart", (event) => {
       items: [shopifyCartLineToGA4Item(cartLine)],
     },
     event: "add_to_cart",
+    event_id: event.id,
+    event_timestamp: event.timestamp,
+    page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
+    page_title: event.context.document.title,
+    shopify_client_id: event.clientId,
+    shopify_event_name: event.name,
+    shopify_event_seq: event.seq,
+    shopify_event_type: event.type,
+  };
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push product_viewed as view_item
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_viewed
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_item
+ */
+analytics.subscribe("product_viewed", (event) => {
+  var productVariant = event.data.productVariant || {};
+
+  var data = {
+    ecommerce: {
+      currency: productVariant.price.currencyCode,
+      value: productVariant.price.amount,
+      items: [shopifyProductVariantToGA4Item(productVariant)],
+    },
+    event: "view_item",
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
