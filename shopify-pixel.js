@@ -153,7 +153,7 @@ function checkoutEventToDataLayer(event_name, event) {
 analytics.subscribe("checkout_completed", (event) => {
   data = checkoutEventToDataLayer("purchase", event);
   console.log("pushing to dataLayer:", data);
-  dataLayer.push(data);
+  window.dataLayer.push(data);
 });
 
 /**
@@ -164,7 +164,7 @@ analytics.subscribe("checkout_completed", (event) => {
 analytics.subscribe("checkout_started", (event) => {
   data = checkoutEventToDataLayer("begin_checkout", event);
   console.log("pushing to dataLayer:", data);
-  dataLayer.push(data);
+  window.dataLayer.push(data);
 });
 
 /**
@@ -192,5 +192,24 @@ analytics.subscribe("product_added_to_cart", (event) => {
     shopify_event_type: event.type,
   };
   console.log("pushing to dataLayer:", data);
-  dataLayer.push(data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push page_viewed as page_view
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/page_viewed
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtm#page_view_event
+ */
+analytics.subscribe("page_viewed", (event) => {
+  window.dataLayer.push({
+    event: "page_view",
+    event_id: event.id,
+    event_timestamp: event.timestamp,
+    page_location: event.context.window.location.href,
+    page_title: event.context.document.title,
+    shopify_client_id: event.clientId,
+    shopify_event_name: event.name,
+    shopify_event_seq: event.seq,
+    shopify_event_type: event.type,
+  });
 });
