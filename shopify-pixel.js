@@ -22,7 +22,7 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
     affiliation: "",
     index: index,
     item_brand: item.variant.product.vendor,
-    item_category: "",
+    item_category: item.variant.product.type,
     item_category2: "",
     item_category3: "",
     item_category4: "",
@@ -36,6 +36,14 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
     price: item.variant.price.amount,
     quantity: item.quantity,
   };
+
+  if (item.variant.title) {
+    var titleSplit = item.variant.title.split("/");
+    data.item_category2 = (titleSplit[0] || "").trim();
+    data.item_category3 = (titleSplit[1] || "").trim();
+    data.item_category4 = (titleSplit[2] || "").trim();
+    data.item_category5 = (titleSplit[3] || "").trim();
+  }
 
   var discountAllocations = item.discountAllocations || [];
 
@@ -68,10 +76,10 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
  * @returns {object} - The GA4 item object
  */
 function shopifyCartLineToGA4Item(cartLine) {
-  return {
+  var data = {
     affiliation: "",
     item_brand: cartLine.merchandise.product.vendor,
-    item_category: "",
+    item_category: cartLine.merchandise.product.type,
     item_category2: "",
     item_category3: "",
     item_category4: "",
@@ -85,6 +93,16 @@ function shopifyCartLineToGA4Item(cartLine) {
     price: cartLine.cost.totalAmount.amount,
     quantity: cartLine.quantity,
   };
+
+  if (cartLine.merchandise.title) {
+    var titleSplit = cartLine.merchandise.title.split("/");
+    data.item_category2 = (titleSplit[0] || "").trim();
+    data.item_category3 = (titleSplit[1] || "").trim();
+    data.item_category4 = (titleSplit[2] || "").trim();
+    data.item_category5 = (titleSplit[3] || "").trim();
+  }
+
+  return data;
 }
 /**
  * Generate a GA4 dataLayer from a Shopify checkout event
