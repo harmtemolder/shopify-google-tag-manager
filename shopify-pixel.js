@@ -10,12 +10,12 @@
 })(window, document, "script", "dataLayer", "GTM-XXXXXXX");
 
 /**
- * Convert Shopify item to GA4 item
+ * Convert Shopify item to GA4 item for checkout events
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_started
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#begin_checkout_item
- * @param item CheckoutLineItem
- * @param index Number
- * @returns GA4Item
+ * @param {object} item - The item object
+ * @param {number} index - The index of the item
+ * @returns {object} - The GA4 item object
  */
 function shopifyCheckoutLineItemToGA4Item(item, index) {
   var data = {
@@ -63,11 +63,40 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
 }
 
 /**
- * Push checkout_completed as purchase
- * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_completed
- * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#purchase
+ * Convert Shopify item to GA4 item for cart events
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_added_to_cart
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_to_cart_item
+ * @param {object} cartLine - The cart line item to convert
+ * @returns {object} - The GA4 item object
  */
-analytics.subscribe("checkout_completed", (event) => {
+function shopifyCartLineToGA4Item(cartLine) {
+  return {
+    affiliation: "",
+    item_brand: cartLine.merchandise.product.vendor,
+    item_category: "",
+    item_category2: "",
+    item_category3: "",
+    item_category4: "",
+    item_category5: "",
+    item_id: cartLine.merchandise.product.id,
+    item_name: cartLine.merchandise.product.title,
+    item_type: cartLine.merchandise.product.type,
+    item_variant: cartLine.merchandise.title,
+    item_variant_id: cartLine.merchandise.id,
+    item_variant_sku: cartLine.merchandise.sku,
+    price: cartLine.cost.totalAmount.amount,
+    quantity: cartLine.quantity,
+  };
+}
+/**
+ * Generate a GA4 dataLayer from a Shopify checkout event
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_started
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#begin_checkout
+ * @param {string} event_name - The name of the event
+ * @param {object} event - The event object
+ * @returns {object} - The GA4 dataLayer object
+ */
+function checkoutEventToDataLayer(event_name, event) {
   var checkout = event.data.checkout || {};
   var coupons = (checkout.discountApplications || [])
     .map(function (discountApplication) {
@@ -86,7 +115,7 @@ analytics.subscribe("checkout_completed", (event) => {
     })
     .join(",");
 
-  dataLayer.push({
+  return {
     checkout_token: checkout.token,
     ecommerce: {
       coupon: coupons,
@@ -100,7 +129,7 @@ analytics.subscribe("checkout_completed", (event) => {
       transaction_id: checkout.order.id,
       value: checkout.totalPrice.amount,
     },
-    event: "purchase",
+    event: event_name,
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
@@ -110,10 +139,21 @@ analytics.subscribe("checkout_completed", (event) => {
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
     user_email: checkout.email,
-    user_id: checkout.customer.id,
-    user_logged_in: checkout.customer.id ? true : false,
+    user_id: checkout.order.customer.id,
+    user_logged_in: checkout.order.customer.id ? true : false,
     user_phone: checkout.phone,
-  });
+  };
+}
+
+/**
+ * Push checkout_completed as purchase
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_completed
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#purchase
+ */
+analytics.subscribe("checkout_completed", (event) => {
+  data = checkoutEventToDataLayer("purchase", event);
+  console.log("pushing to dataLayer:", data);
+  dataLayer.push(data);
 });
 
 /**
@@ -122,39 +162,26 @@ analytics.subscribe("checkout_completed", (event) => {
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#begin_checkout
  */
 analytics.subscribe("checkout_started", (event) => {
-  var checkout = event.data.checkout || {};
-  var coupons = (checkout.discountApplications || [])
-    .map(function (discountApplication) {
-      return discountApplication.title;
-    })
-    .join(",");
-  var items = (checkout.lineItems || []).map(shopifyCheckoutLineItemToGA4Item);
-  var paymentMethods = (checkout.transactions || [])
-    .map(function (transaction) {
-      return transaction.paymentMethod.name;
-    })
-    .join(",");
-  var deliveryOptions = (checkout.delivery.selectedDeliveryOptions || [])
-    .map(function (deliveryOption) {
-      return deliveryOption.title;
-    })
-    .join(",");
+  data = checkoutEventToDataLayer("begin_checkout", event);
+  console.log("pushing to dataLayer:", data);
+  dataLayer.push(data);
+});
 
-  dataLayer.push({
-    checkout_token: checkout.token,
+/**
+ * Push product_added_to_cart as add_to_cart
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_added_to_cart
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_to_cart
+ */
+analytics.subscribe("product_added_to_cart", (event) => {
+  var cartLine = event.data.cartLine || {};
+
+  var data = {
     ecommerce: {
-      coupon: coupons,
-      currency: checkout.currencyCode,
-      items: items,
-      payment_type: paymentMethods,
-      shipping: checkout.shippingLine.price.amount,
-      shipping_tier: deliveryOptions,
-      subtotal: checkout.subtotalPrice.amount,
-      tax: checkout.totalTax.amount,
-      transaction_id: checkout.order.id,
-      value: checkout.totalPrice.amount,
+      currency: cartLine.cost.totalAmount.currencyCode,
+      value: cartLine.cost.totalAmount.amount,
+      items: [shopifyCartLineToGA4Item(cartLine)],
     },
-    event: "begin_checkout",
+    event: "add_to_cart",
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
@@ -163,9 +190,7 @@ analytics.subscribe("checkout_started", (event) => {
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
-    user_email: checkout.email,
-    user_id: checkout.customer.id,
-    user_logged_in: checkout.customer.id ? true : false,
-    user_phone: checkout.phone,
-  });
+  };
+  console.log("pushing to dataLayer:", data);
+  dataLayer.push(data);
 });

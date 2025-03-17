@@ -4,7 +4,7 @@ This snippet should serve as a good generic starting point for shop owners worki
 
 ## Note on testing
 
-[Shopify custom pixels](https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/code) create a sandboxed environment with access to [Shopify analytics standard events](https://shopify.dev/docs/api/web-pixels-api/standard-events). The sandboxed environment runs pixel code in an HTML `<iframe>`, which does not play well with Google Tag Manager's Tag Assistant. As a result, confirming the installation and debugging may be a bit of a challenge. My approach has been to look at `dataLayer` in the browser's developer tools console.
+[Shopify custom pixels](https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/code) create a sandboxed environment with access to [Shopify analytics standard events](https://shopify.dev/docs/api/web-pixels-api/standard-events). The sandboxed environment runs pixel code in an HTML `<iframe>`, which does not play well with Google Tag Manager's Tag Assistant. As a result, confirming the installation and debugging may be a bit of a challenge. My approach has been to add `console.log` calls with the `dataLayer` object and check the developer console.
 
 ## Installation
 
