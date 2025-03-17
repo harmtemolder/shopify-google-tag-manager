@@ -174,6 +174,48 @@ analytics.subscribe("checkout_completed", (event) => {
 });
 
 /**
+ * Push payment_info_submitted as add_payment_info
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/payment_info_submitted
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_payment_info
+ */
+analytics.subscribe("payment_info_submitted", (event) => {
+  data = checkoutEventToDataLayer("add_payment_info", event);
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push checkout_address_info_submitted (i.e. phone number) as add_address_info
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_address_info_submitted
+ */
+analytics.subscribe("checkout_address_info_submitted", (event) => {
+  data = checkoutEventToDataLayer("add_address_info", event);
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push checkout_shipping_info_submitted (i.e. address) as add_shipping_info
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_shipping_info_submitted
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_shipping_info
+ */
+analytics.subscribe("checkout_shipping_info_submitted", (event) => {
+  data = checkoutEventToDataLayer("add_shipping_info", event);
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push checkout_contact_info_submitted (i.e. email) as add_contact_info
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_contact_info_submitted
+ */
+analytics.subscribe("checkout_contact_info_submitted", (event) => {
+  data = checkoutEventToDataLayer("add_contact_info", event);
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
  * Push checkout_started as begin_checkout
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_started
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#begin_checkout
