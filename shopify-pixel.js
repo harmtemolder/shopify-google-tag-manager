@@ -375,7 +375,7 @@ analytics.subscribe("collection_viewed", (event) => {
 
   var data = {
     ecommerce: {
-      currency: collection.productVariants[0].price.currencyCode || "",
+      currency: collection.productVariants[0] ? collection.productVariants[0].price.currencyCode : "", // prettier-ignore
       item_list_id: collection.id,
       item_list_name: collection.title,
       items: collection.productVariants.map(shopifyProductVariantToGA4Item),
@@ -386,6 +386,37 @@ analytics.subscribe("collection_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
+    shopify_client_id: event.clientId,
+    shopify_event_name: event.name,
+    shopify_event_seq: event.seq,
+    shopify_event_type: event.type,
+  };
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+
+/**
+ * Push search_submitted as search
+ * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/search_submitted
+ * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#search
+ */
+analytics.subscribe("search_submitted", (event) => {
+  var searchResult = event.data.searchResult || {};
+
+  var data = {
+    ecommerce: {
+      currency: searchResult.productVariants[0] ? searchResult.productVariants[0].price.currencyCode : "", // prettier-ignore
+      item_list_id: "search",
+      item_list_name: "Search",
+      items: searchResult.productVariants.map(shopifyProductVariantToGA4Item),
+    },
+    event: "search",
+    event_id: event.id,
+    event_timestamp: event.timestamp,
+    page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
+    page_title: event.context.document.title,
+    search_term: searchResult.query,
     shopify_client_id: event.clientId,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
