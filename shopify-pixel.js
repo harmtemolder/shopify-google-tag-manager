@@ -133,6 +133,7 @@ function checkoutEventToDataLayer(event_name, event) {
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
     shopify_client_id: event.clientId,
     shopify_event_name: event.name,
@@ -185,6 +186,7 @@ analytics.subscribe("product_added_to_cart", (event) => {
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
     shopify_client_id: event.clientId,
     shopify_event_name: event.name,
@@ -201,15 +203,18 @@ analytics.subscribe("product_added_to_cart", (event) => {
  * @see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtm#page_view_event
  */
 analytics.subscribe("page_viewed", (event) => {
-  window.dataLayer.push({
+  data = {
     event: "page_view",
     event_id: event.id,
     event_timestamp: event.timestamp,
     page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
     shopify_client_id: event.clientId,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
-  });
+  };
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
 });
