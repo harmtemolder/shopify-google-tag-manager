@@ -38,11 +38,11 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
   };
 
   if (item.variant.title) {
-    var titleSplit = item.variant.title.split("/");
-    data.item_category2 = (titleSplit[0] || "").trim();
-    data.item_category3 = (titleSplit[1] || "").trim();
-    data.item_category4 = (titleSplit[2] || "").trim();
-    data.item_category5 = (titleSplit[3] || "").trim();
+    var titleSplit = item.variant.title.split(" / ");
+    data.item_category2 = titleSplit[0] || null;
+    data.item_category3 = titleSplit[1] || null;
+    data.item_category4 = titleSplit[2] || null;
+    data.item_category5 = titleSplit[3] || null;
   }
 
   var discountAllocations = item.discountAllocations || [];
@@ -97,11 +97,11 @@ function shopifyProductVariantToGA4Item(productVariant, index) {
   }
 
   if (productVariant.title) {
-    var titleSplit = productVariant.title.split("/");
-    data.item_category2 = (titleSplit[0] || "").trim();
-    data.item_category3 = (titleSplit[1] || "").trim();
-    data.item_category4 = (titleSplit[2] || "").trim();
-    data.item_category5 = (titleSplit[3] || "").trim();
+    var titleSplit = productVariant.title.split(" / ");
+    data.item_category2 = titleSplit[0] || null;
+    data.item_category3 = titleSplit[1] || null;
+    data.item_category4 = titleSplit[2] || null;
+    data.item_category5 = titleSplit[3] || null;
   }
 
   return data;
