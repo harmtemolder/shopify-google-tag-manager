@@ -28,7 +28,7 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
     item_category4: "",
     item_category5: "",
     item_id: item.variant.product.id,
-    item_name: item.variant.product.title,
+    item_name: item.title, // Not item.variant.product.title
     item_type: item.variant.product.type,
     item_variant: item.variant.title,
     item_variant_id: item.variant.id,
