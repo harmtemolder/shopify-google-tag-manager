@@ -141,14 +141,17 @@ function checkoutEventToDataLayer(event_name, event) {
   var items = (checkout.lineItems || []).map(shopifyCheckoutLineItemToGA4Item);
   var paymentMethods = (checkout.transactions || [])
     .map(function (transaction) {
-      return transaction.paymentMethod.name;
+      if (transaction.paymentMethod) {
+        return transaction.paymentMethod.name || null;
+      }
     })
     .join(",");
-  var deliveryOptions = (checkout.delivery.selectedDeliveryOptions || [])
-    .map(function (deliveryOption) {
-      return deliveryOption.title;
-    })
-    .join(",");
+  var deliveryOptions =
+    (checkout.delivery && checkout.delivery.selectedDeliveryOptions ? checkout.delivery.selectedDeliveryOptions : []) // prettier-ignore
+      .map(function (deliveryOption) {
+        return deliveryOption.title || null;
+      })
+      .join(",");
 
   return {
     checkout_token: checkout.token,
