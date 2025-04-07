@@ -36,9 +36,19 @@ Create a [Shopify custom pixel](https://help.shopify.com/en/manual/promoting-mar
    - `search`
    - `page_view`
 
-### Optional: Add more `dataLayer.push` calls to your theme
+### Optional: Add more `Shopify.analytics.publish()` calls to your theme
 
-There may be certain scenarios where you may need access to data that default Shopify events do not provide. In these cases, you may want to install GTM into your theme the traditional way. Refer to [Google's documentation](https://support.google.com/tagmanager/answer/6103696?hl=en).
+There may be certain scenarios where you would want to track events that Shopify does not provide by default. You can add these to your theme by implementing calls like this:
+
+```javascript
+Shopify.analytics.publish('custom_event', {
+  event: 'event_name',
+  key1: 'value1',
+  key2: 'value2'
+});
+```
+
+You are free the change the value of `event`, and the key-value pairs, of course.
 
 ## Credits
 

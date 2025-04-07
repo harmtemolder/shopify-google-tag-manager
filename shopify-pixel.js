@@ -450,3 +450,22 @@ analytics.subscribe("page_viewed", (event) => {
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
+
+/**
+ * Push custom_event
+ * @see https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/gtm-tutorial#replace-old-calls
+ */
+analytics.subscribe("custom_event", (event) => {
+  data = event.customData;
+  data.event_id = event.id;
+  data.event_timestamp = event.timestamp;
+  data.page_location = event.context.window.location.href;
+  data.page_referrer = event.context.document.referrer;
+  data.page_title = event.context.document.title;
+  data.shopify_client_id = event.clientId;
+  data.shopify_event_name = event.name;
+  data.shopify_event_seq = event.seq;
+  data.shopify_event_type = event.type;
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
