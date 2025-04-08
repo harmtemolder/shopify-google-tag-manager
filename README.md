@@ -90,3 +90,5 @@ Then replace your SSGTM endpoint in the Shopify webhook with Webhook Relay's and
 ## Credits
 
 - All credits for the foundation [this pixel](#custom-web-pixel) was built on go to <https://github.com/lstellway/snippets>
+- The icon was downloaded from [Font Awesome](https://fontawesome.com/icons/shopify?f=classic&s=brands) and converted to PNG using [ImageMagick](https://www.imagemagick.org/) with:
+  `magick shopify.svg -resize 192x192 -gravity center -extent 192x192 shopify.png`

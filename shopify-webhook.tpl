@@ -16,7 +16,8 @@ ___INFO___
   "displayName": "Shopify Webhook",
   "brand": {
     "id": "brand_dummy",
-    "displayName": ""
+    "displayName": "",
+    "thumbnail": "data:image/png;base64,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\u003d\u003d"
   },
   "description": "Assumes version \u003cpre\u003e2025-01\u003c/pre\u003e.",
   "containerContexts": [
@@ -65,15 +66,39 @@ const setResponseBody = require("setResponseBody");
 const setResponseHeader = require("setResponseHeader");
 const setResponseStatus = require("setResponseStatus");
 
+function lineItemsToGA4Items(lineItems) {
+  return lineItems.map((item, index) => ({
+    affiliation: "",
+    index: index,
+    // item: item, // TODO Remove after debugging
+    item_brand: item.vendor,
+    item_category: null,
+    item_category2: null,
+    item_category3: null,
+    item_category4: null,
+    item_category5: null,
+    item_id: item.product_id.toString(),
+    item_name: item.title,
+    item_type: null,
+    item_variant: item.variant_title,
+    item_variant_id: item.variant_id.toString(),
+    item_variant_sku: item.sku,
+    price: item.price_set.shop_money.amount,
+    quantity: item.quantity,
+  }));
+}
 const requestPath = getRequestPath();
 if (requestPath === data.requestPath) {
   claimRequest();
 
-  const shopify = JSON.parse(getRequestBody());
+  const requestBody = getRequestBody();
+  logToConsole("requestBody =", requestBody);
+
+  const shopify = JSON.parse(requestBody);
   logToConsole("shopify =", shopify);
 
   let ga4 = {
-    shopify: shopify, // TODO Remove after debugging
+    // shopify: shopify, // TODO Remove after debugging
   };
   let response = {};
 
@@ -82,15 +107,15 @@ if (requestPath === data.requestPath) {
     ga4 = {
       checkout_token: shopify.checkout_token,
       client_id: shopify.customer.id.toString(),
-      coupon: null, // TODO
+      coupon: shopify.discount_codes.map((code) => code.code).join(","),
       currency: shopify.current_total_price_set.shop_money.currency_code,
       event_id: shopify.id.toString(),
       event_name: "purchase",
       event_timestamp: shopify.created_at,
-      items: [], // TODO
-      payment_type: null, // TODO
+      items: lineItemsToGA4Items(shopify.line_items),
+      payment_type: shopify.payment_gateway_names.join(","),
       shipping: shopify.current_shipping_price_set.shop_money.amount,
-      shipping_tier: null, // TODO
+      shipping_tier: shopify.shipping_lines.map((line) => line.title).join(","),
       shopify_event_name: shopifyTopic,
       subtotal: shopify.current_subtotal_price_set.shop_money.amount,
       tax: shopify.current_total_tax_set.shop_money.amount,
@@ -107,6 +132,7 @@ if (requestPath === data.requestPath) {
   }
 
   response.event = ga4;
+  logToConsole("response =", response);
 
   const responseBody = JSON.stringify(response);
   setResponseBody(responseBody);
@@ -840,6 +866,6 @@ setup: ''
 
 ___NOTES___
 
-Created on 4/8/2025, 8:25:07 AM
+Created on 4/8/2025, 12:02:43 PM
 
 
