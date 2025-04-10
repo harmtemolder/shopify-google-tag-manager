@@ -15,7 +15,7 @@ const setResponseStatus = require("setResponseStatus");
 
 function lineItemsToGA4Items(lineItems) {
   return lineItems.map((item, index) => ({
-    affiliation: "",
+    affiliation: null,
     index: index,
     // item: item, // TODO Remove after debugging
     item_brand: item.vendor,

@@ -68,7 +68,7 @@ const setResponseStatus = require("setResponseStatus");
 
 function lineItemsToGA4Items(lineItems) {
   return lineItems.map((item, index) => ({
-    affiliation: "",
+    affiliation: null,
     index: index,
     // item: item, // TODO Remove after debugging
     item_brand: item.vendor,
@@ -866,6 +866,6 @@ setup: ''
 
 ___NOTES___
 
-Created on 4/8/2025, 12:02:43 PM
+Created on 4/10/2025, 9:23:55 AM
 
 
