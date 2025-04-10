@@ -19,14 +19,14 @@
  */
 function shopifyCheckoutLineItemToGA4Item(item, index) {
   var data = {
-    affiliation: "",
+    affiliation: null,
     index: index,
     item_brand: item.variant.product.vendor,
     item_category: item.variant.product.type,
-    item_category2: "",
-    item_category3: "",
-    item_category4: "",
-    item_category5: "",
+    item_category2: null,
+    item_category3: null,
+    item_category4: null,
+    item_category5: null,
     item_id: item.variant.product.id,
     item_name: item.title, // Not item.variant.product.title
     item_type: item.variant.product.type,
@@ -76,13 +76,13 @@ function shopifyCheckoutLineItemToGA4Item(item, index) {
  */
 function shopifyProductVariantToGA4Item(productVariant, index) {
   var data = {
-    affiliation: "",
+    affiliation: null,
     item_brand: productVariant.product.vendor,
     item_category: productVariant.product.type,
-    item_category2: "",
-    item_category3: "",
-    item_category4: "",
-    item_category5: "",
+    item_category2: null,
+    item_category3: null,
+    item_category4: null,
+    item_category5: null,
     item_id: productVariant.product.id,
     item_name: productVariant.product.title,
     item_type: productVariant.product.type,
@@ -378,7 +378,7 @@ analytics.subscribe("collection_viewed", (event) => {
 
   var data = {
     ecommerce: {
-      currency: collection.productVariants[0] ? collection.productVariants[0].price.currencyCode : "", // prettier-ignore
+      currency: collection.productVariants[0] ? collection.productVariants[0].price.currencyCode : null, // prettier-ignore
       item_list_id: collection.id,
       item_list_name: collection.title,
       items: collection.productVariants.map(shopifyProductVariantToGA4Item),
@@ -408,7 +408,7 @@ analytics.subscribe("search_submitted", (event) => {
 
   var data = {
     ecommerce: {
-      currency: searchResult.productVariants[0] ? searchResult.productVariants[0].price.currencyCode : "", // prettier-ignore
+      currency: searchResult.productVariants[0] ? searchResult.productVariants[0].price.currencyCode : null, // prettier-ignore
       item_list_id: "search",
       item_list_name: "Search",
       items: searchResult.productVariants.map(shopifyProductVariantToGA4Item),
