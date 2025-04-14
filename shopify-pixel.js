@@ -177,10 +177,12 @@ function checkoutEventToDataLayer(event_name, event) {
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
-    user_email: checkout.email,
+    user_data: {
+      email: checkout.email,
+      phone_number: checkout.phone,
+    },
     user_id: checkout.order.customer.id,
     user_logged_in: checkout.order.customer.id ? true : false,
-    user_phone: checkout.phone,
   };
 }
 

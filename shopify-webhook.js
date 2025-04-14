@@ -67,10 +67,12 @@ if (requestPath === data.requestPath) {
       subtotal: shopify.current_subtotal_price_set.shop_money.amount,
       tax: shopify.current_total_tax_set.shop_money.amount,
       transaction_id: shopify.id.toString(),
-      user_email: shopify.customer.email,
+      user_data: {
+        email: shopify.customer.email,
+        phone_number: shopify.customer.phone,
+      },
       user_id: shopify.customer.id.toString(),
       user_logged_in: shopify.customer.id ? true : false,
-      user_phone: shopify.customer.phone,
       value: shopify.current_total_price_set.shop_money.amount,
     };
     response.message = "forwarded `orders/create` as `purchase`";
