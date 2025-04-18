@@ -187,11 +187,17 @@ function checkoutEventToDataLayer(event_name, event) {
 }
 
 /**
- * Push checkout_completed as purchase
+ * Push checkout_completed and custom_checkout_completed as purchase
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_completed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#purchase
  */
 analytics.subscribe("checkout_completed", (event) => {
+  data = checkoutEventToDataLayer("purchase", event);
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+analytics.subscribe("custom_checkout_completed", (event) => {
+  console.log("event:", event);
   data = checkoutEventToDataLayer("purchase", event);
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
