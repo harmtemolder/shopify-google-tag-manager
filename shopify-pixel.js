@@ -348,12 +348,35 @@ analytics.subscribe("product_added_to_cart", (event) => {
 });
 
 /**
- * Push product_viewed as view_item
+ * Push product_viewed and custom_product_viewed as view_item
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_viewed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_item
  */
 analytics.subscribe("product_viewed", (event) => {
   var productVariant = event.data.productVariant || {};
+
+  var data = {
+    ecommerce: {
+      currency: productVariant.price.currencyCode,
+      value: productVariant.price.amount,
+      items: [shopifyProductVariantToGA4Item(productVariant)],
+    },
+    event: "view_item",
+    event_id: event.id,
+    event_timestamp: event.timestamp,
+    page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
+    page_title: event.context.document.title,
+    shopify_client_id: event.clientId,
+    shopify_event_name: event.name,
+    shopify_event_seq: event.seq,
+    shopify_event_type: event.type,
+  };
+  console.log("pushing to dataLayer:", data);
+  window.dataLayer.push(data);
+});
+analytics.subscribe("custom_product_viewed", (event) => {
+  var productVariant = event.customData.productVariant || {};
 
   var data = {
     ecommerce: {
