@@ -286,12 +286,39 @@ analytics.subscribe("product_removed_from_cart", (event) => {
 });
 
 /**
- * Push cart_viewed as view_cart
+ * Push cart_viewed and custom_cart_viewed as view_cart
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/cart_viewed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_cart
  */
 analytics.subscribe("cart_viewed", (event) => {
   var cart = event.data.cart || {};
+  var data = {
+    cart_id: cart.id,
+    ecommerce: {
+      currency: cart.cost.totalAmount.currencyCode,
+      value: cart.cost.totalAmount.amount,
+      items: cart.lines.map(shopifyCartLineToGA4Item),
+    },
+    event: "view_cart",
+    event_id: event.id,
+    event_timestamp: event.timestamp,
+    page_location: event.context.window.location.href,
+    page_referrer: event.context.document.referrer,
+    page_title: event.context.document.title,
+    shopify_client_id: event.clientId,
+    shopify_event_name: event.name,
+    shopify_event_seq: event.seq,
+    shopify_event_type: event.type,
+  };
+  var attributes = cart.attributes || [];
+  for (var i = 0; i < attributes.length; i++) {
+    data["cart_attribute_" + attributes[i].key] = attributes[i].value;
+  }
+  console.log(data);
+  window.dataLayer.push(data);
+});
+analytics.subscribe("custom_cart_viewed", (event) => {
+  var cart = event.customData.cart || {};
   var data = {
     cart_id: cart.id,
     ecommerce: {
