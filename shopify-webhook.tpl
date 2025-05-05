@@ -54,12 +54,13 @@ ___SANDBOXED_JS_FOR_SERVER___
 // https://developers.google.com/tag-platform/tag-manager/server-side/api
 // https://developers.google.com/tag-platform/tag-manager/templates/standard-library
 
+const JSON = require("JSON");
 const claimRequest = require("claimRequest");
 const getRequestBody = require("getRequestBody");
 const getRequestHeader = require("getRequestHeader");
 const getRequestPath = require("getRequestPath");
-const JSON = require("JSON");
 const logToConsole = require("logToConsole");
+const makeNumber = require("makeNumber");
 const returnResponse = require("returnResponse");
 const runContainer = require("runContainer");
 const setResponseBody = require("setResponseBody");
@@ -97,6 +98,12 @@ if (requestPath === data.requestPath) {
   const shopify = JSON.parse(requestBody);
   logToConsole("shopify =", shopify);
 
+  const shopifyNoteAttributes = shopify.note_attributes.reduce(
+    (obj, item) => ((obj[item.name] = item.value), obj),
+    {},
+  );
+  logToConsole("shopifyNoteAttributes =", shopifyNoteAttributes);
+
   let ga4 = {
     // shopify: shopify, // TODO Remove after debugging
   };
@@ -106,26 +113,39 @@ if (requestPath === data.requestPath) {
   if (shopifyTopic === "orders/create") {
     ga4 = {
       checkout_token: shopify.checkout_token,
-      client_id: shopify.customer.id.toString(),
+      client_id: shopifyNoteAttributes._cid || shopify.customer.id.toString(),
       coupon: shopify.discount_codes.map((code) => code.code).join(","),
       currency: shopify.current_total_price_set.shop_money.currency_code,
       event_id: shopify.id.toString(),
       event_name: "purchase",
       event_timestamp: shopify.created_at,
+      ga_client_id: shopifyNoteAttributes._cid || undefined,
+      ga_session_id: makeNumber(shopifyNoteAttributes._sid) || undefined,
+      ga_session_number: makeNumber(shopifyNoteAttributes._sct) || undefined,
+      gclid: shopifyNoteAttributes._gclid || undefined,
       items: lineItemsToGA4Items(shopify.line_items),
+      page_location: shopify.order_status_url.split("?")[0],
       payment_type: shopify.payment_gateway_names.join(","),
       shipping: shopify.current_shipping_price_set.shop_money.amount,
       shipping_tier: shopify.shipping_lines.map((line) => line.title).join(","),
+      shopify_client_id: shopifyNoteAttributes._shopify_y || undefined,
       shopify_event_name: shopifyTopic,
+      shopify_session_id: shopifyNoteAttributes._shopify_s || undefined,
       subtotal: shopify.current_subtotal_price_set.shop_money.amount,
       tax: shopify.current_total_tax_set.shop_money.amount,
       transaction_id: shopify.id.toString(),
-      user_email: shopify.customer.email,
+      user_data: {
+        email: shopify.customer.email,
+        phone_number: shopify.customer.phone,
+      },
       user_id: shopify.customer.id.toString(),
       user_logged_in: shopify.customer.id ? true : false,
-      user_phone: shopify.customer.phone,
       value: shopify.current_total_price_set.shop_money.amount,
     };
+    if (shopifyNoteAttributes.hasOwnProperty("_gclid")) {
+      ga4.page_location =
+        ga4.page_location + "?gclid=" + shopifyNoteAttributes._gclid;
+    }
     response.message = "forwarded `orders/create` as `purchase`";
   } else {
     response.message = "forwarded without event_name";
@@ -866,6 +886,6 @@ setup: ''
 
 ___NOTES___
 
-Created on 4/10/2025, 9:23:55 AM
+Created on 5/5/2025, 9:56:06 AM
 
 

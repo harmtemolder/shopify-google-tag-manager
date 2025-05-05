@@ -173,7 +173,7 @@ function checkoutEventToDataLayer(event_name, event) {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -187,18 +187,14 @@ function checkoutEventToDataLayer(event_name, event) {
 }
 
 /**
- * Push checkout_completed and custom_checkout_completed as purchase
+ * Push checkout_completed as purchase
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_completed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#purchase
  */
-analytics.subscribe("checkout_completed", (event) => {
+analytics.subscribe("checkout_completed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = checkoutEventToDataLayer("purchase", event);
-  console.log("pushing to dataLayer:", data);
-  window.dataLayer.push(data);
-});
-analytics.subscribe("custom_checkout_completed", (event) => {
-  console.log("event:", event);
-  data = checkoutEventToDataLayer("purchase", event);
+  data.shopify_session_id = shopify_session_id || undefined;
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
@@ -208,8 +204,10 @@ analytics.subscribe("custom_checkout_completed", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/payment_info_submitted
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_payment_info
  */
-analytics.subscribe("payment_info_submitted", (event) => {
+analytics.subscribe("payment_info_submitted", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = checkoutEventToDataLayer("add_payment_info", event);
+  data.shopify_session_id = shopify_session_id || undefined;
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
@@ -218,8 +216,10 @@ analytics.subscribe("payment_info_submitted", (event) => {
  * Push checkout_address_info_submitted (i.e. phone number) as add_address_info
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_address_info_submitted
  */
-analytics.subscribe("checkout_address_info_submitted", (event) => {
+analytics.subscribe("checkout_address_info_submitted", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = checkoutEventToDataLayer("add_address_info", event);
+  data.shopify_session_id = shopify_session_id || undefined;
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
@@ -229,8 +229,10 @@ analytics.subscribe("checkout_address_info_submitted", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_shipping_info_submitted
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_shipping_info
  */
-analytics.subscribe("checkout_shipping_info_submitted", (event) => {
+analytics.subscribe("checkout_shipping_info_submitted", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = checkoutEventToDataLayer("add_shipping_info", event);
+  data.shopify_session_id = shopify_session_id || undefined;
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
@@ -239,8 +241,10 @@ analytics.subscribe("checkout_shipping_info_submitted", (event) => {
  * Push checkout_contact_info_submitted (i.e. email) as add_contact_info
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_contact_info_submitted
  */
-analytics.subscribe("checkout_contact_info_submitted", (event) => {
+analytics.subscribe("checkout_contact_info_submitted", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = checkoutEventToDataLayer("add_contact_info", event);
+  data.shopify_session_id = shopify_session_id || undefined;
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
@@ -250,8 +254,10 @@ analytics.subscribe("checkout_contact_info_submitted", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/checkout_started
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#begin_checkout
  */
-analytics.subscribe("checkout_started", (event) => {
+analytics.subscribe("checkout_started", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = checkoutEventToDataLayer("begin_checkout", event);
+  data.shopify_session_id = shopify_session_id || undefined;
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
@@ -261,7 +267,8 @@ analytics.subscribe("checkout_started", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_removed_from_cart
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#remove_from_cart
  */
-analytics.subscribe("product_removed_from_cart", (event) => {
+analytics.subscribe("product_removed_from_cart", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var cartLine = event.data.cartLine || {};
 
   var data = {
@@ -276,7 +283,8 @@ analytics.subscribe("product_removed_from_cart", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -290,7 +298,8 @@ analytics.subscribe("product_removed_from_cart", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/cart_viewed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_cart
  */
-analytics.subscribe("cart_viewed", (event) => {
+analytics.subscribe("cart_viewed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var cart = event.data.cart || {};
   var data = {
     cart_id: cart.id,
@@ -305,7 +314,8 @@ analytics.subscribe("cart_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -317,7 +327,8 @@ analytics.subscribe("cart_viewed", (event) => {
   console.log(data);
   window.dataLayer.push(data);
 });
-analytics.subscribe("custom_cart_viewed", (event) => {
+analytics.subscribe("custom_cart_viewed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var cart = event.customData.cart || {};
   var data = {
     cart_id: cart.id,
@@ -332,7 +343,8 @@ analytics.subscribe("custom_cart_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -350,7 +362,8 @@ analytics.subscribe("custom_cart_viewed", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_added_to_cart
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#add_to_cart
  */
-analytics.subscribe("product_added_to_cart", (event) => {
+analytics.subscribe("product_added_to_cart", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var cartLine = event.data.cartLine || {};
 
   var data = {
@@ -365,7 +378,8 @@ analytics.subscribe("product_added_to_cart", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -379,7 +393,8 @@ analytics.subscribe("product_added_to_cart", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/product_viewed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_item
  */
-analytics.subscribe("product_viewed", (event) => {
+analytics.subscribe("product_viewed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var productVariant = event.data.productVariant || {};
 
   var data = {
@@ -394,7 +409,8 @@ analytics.subscribe("product_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -402,7 +418,8 @@ analytics.subscribe("product_viewed", (event) => {
   console.log("pushing to dataLayer:", data);
   window.dataLayer.push(data);
 });
-analytics.subscribe("custom_product_viewed", (event) => {
+analytics.subscribe("custom_product_viewed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var productVariant = event.customData.productVariant || {};
 
   var data = {
@@ -417,7 +434,8 @@ analytics.subscribe("custom_product_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -431,7 +449,8 @@ analytics.subscribe("custom_product_viewed", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/collection_viewed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#view_item_list
  */
-analytics.subscribe("collection_viewed", (event) => {
+analytics.subscribe("collection_viewed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var collection = event.data.collection || {};
 
   var data = {
@@ -447,7 +466,8 @@ analytics.subscribe("collection_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -461,7 +481,8 @@ analytics.subscribe("collection_viewed", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/search_submitted
  * @see https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtm#search
  */
-analytics.subscribe("search_submitted", (event) => {
+analytics.subscribe("search_submitted", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   var searchResult = event.data.searchResult || {};
 
   var data = {
@@ -478,7 +499,8 @@ analytics.subscribe("search_submitted", (event) => {
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
     search_term: searchResult.query,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -492,7 +514,8 @@ analytics.subscribe("search_submitted", (event) => {
  * @see https://shopify.dev/docs/api/web-pixels-api/standard-events/page_viewed
  * @see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtm#page_view_event
  */
-analytics.subscribe("page_viewed", (event) => {
+analytics.subscribe("page_viewed", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = {
     event: "page_view",
     event_id: event.id,
@@ -500,7 +523,8 @@ analytics.subscribe("page_viewed", (event) => {
     page_location: event.context.window.location.href,
     page_referrer: event.context.document.referrer,
     page_title: event.context.document.title,
-    shopify_client_id: event.clientId,
+    shopify_client_id: event.clientId || undefined,
+    shopify_session_id: shopify_session_id || undefined,
     shopify_event_name: event.name,
     shopify_event_seq: event.seq,
     shopify_event_type: event.type,
@@ -513,14 +537,16 @@ analytics.subscribe("page_viewed", (event) => {
  * Push custom_event
  * @see https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/gtm-tutorial#replace-old-calls
  */
-analytics.subscribe("custom_event", (event) => {
+analytics.subscribe("custom_event", async (event) => {
+  const shopify_session_id = await browser.cookie.get("_shopify_s");
   data = event.customData;
   data.event_id = event.id;
   data.event_timestamp = event.timestamp;
   data.page_location = event.context.window.location.href;
   data.page_referrer = event.context.document.referrer;
   data.page_title = event.context.document.title;
-  data.shopify_client_id = event.clientId;
+  data.shopify_client_id = event.clientId || undefined;
+  data.shopify_session_id = shopify_session_id || undefined;
   data.shopify_event_name = event.name;
   data.shopify_event_seq = event.seq;
   data.shopify_event_type = event.type;
