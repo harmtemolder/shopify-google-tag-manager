@@ -40,6 +40,7 @@ $(document).ready(function () {
   }
 
   const params = new URLSearchParams(document.location.search);
+  const fbclid = params.get("fbclid");
   const gclid = params.get("gclid");
   const gaClientId = getGaClientId();
   const gaSessionId = getGaSessionId();
@@ -48,6 +49,7 @@ $(document).ready(function () {
   const shopifySessionId = getShopifySessionId();
 
   if (
+    fbclid ||
     gclid ||
     gaClientId ||
     gaSessionId ||
@@ -57,6 +59,7 @@ $(document).ready(function () {
   ) {
     let formData = new FormData();
 
+    if (fbclid) formData.append("attributes[_fbclid]", fbclid);
     if (gclid) formData.append("attributes[_gclid]", gclid);
     if (gaClientId) formData.append("attributes[_cid]", gaClientId);
     if (gaSessionId) formData.append("attributes[_sid]", gaSessionId);

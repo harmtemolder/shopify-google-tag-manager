@@ -119,6 +119,7 @@ if (requestPath === data.requestPath) {
       event_id: shopify.id.toString(),
       event_name: "purchase",
       event_timestamp: shopify.created_at,
+      fbclid: shopifyNoteAttributes._fbclid || undefined,
       ga_client_id: shopifyNoteAttributes._cid || undefined,
       ga_session_id: makeNumber(shopifyNoteAttributes._sid) || undefined,
       ga_session_number: makeNumber(shopifyNoteAttributes._sct) || undefined,
@@ -145,6 +146,13 @@ if (requestPath === data.requestPath) {
     if (shopifyNoteAttributes.hasOwnProperty("_gclid")) {
       ga4.page_location =
         ga4.page_location + "?gclid=" + shopifyNoteAttributes._gclid;
+      if (shopifyNoteAttributes.hasOwnProperty("_fbclid")) {
+        ga4.page_location =
+          ga4.page_location + "&fbclid=" + shopifyNoteAttributes._fbclid;
+      }
+    } else if (shopifyNoteAttributes.hasOwnProperty("_fbclid")) {
+      ga4.page_location =
+        ga4.page_location + "?fbclid=" + shopifyNoteAttributes._fbclid;
     }
     response.message = "forwarded `orders/create` as `purchase`";
   } else {
@@ -886,6 +894,6 @@ setup: ''
 
 ___NOTES___
 
-Created on 5/5/2025, 9:56:06 AM
+Created on 5/6/2025, 3:39:04 PM
 
 
