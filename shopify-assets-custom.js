@@ -15,13 +15,13 @@ $(document).ready(function () {
   }
 
   function getGaSessionId() {
-    const cookie = getCookie("_ga_HQ2TWX8RBP"); // TODO Do not hardcode this
+    const cookie = getCookie("_ga_5311K1XXHW"); // TODO Do not hardcode this
     if (!cookie) return undefined;
     return parseInt(cookie.split(".")[2]);
   }
 
   function getGaSessionCount() {
-    const cookie = getCookie("_ga_HQ2TWX8RBP"); // TODO Do not hardcode this
+    const cookie = getCookie("_ga_5311K1XXHW"); // TODO Do not hardcode this
     if (!cookie) return undefined;
     return parseInt(cookie.split(".")[3]);
   }

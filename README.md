@@ -39,10 +39,10 @@ Create a [Shopify custom pixel](https://help.shopify.com/en/manual/promoting-mar
 There may be certain scenarios where you would want to track events that Shopify does not provide by default. You can add these to your theme by implementing calls like this:
 
 ```javascript
-Shopify.analytics.publish('custom_event', {
-  event: 'event_name',
-  key1: 'value1',
-  key2: 'value2'
+Shopify.analytics.publish("custom_event", {
+  event: "event_name",
+  key1: "value1",
+  key2: "value2",
 });
 ```
 
@@ -52,18 +52,24 @@ You are free the change the value of `event`, and the key-value pairs, of course
 
 [Shopify custom pixels](https://help.shopify.com/en/manual/promoting-marketing/pixels/custom-pixels/code) create a sandboxed environment with access to [standard events](https://shopify.dev/docs/api/web-pixels-api/standard-events). The sandboxed environment runs pixel code in an HTML `<iframe>`, which does not play well with GTM's Tag Assistant. As a result, confirming the installation and debugging may be a bit of a challenge. My approach has been to add `console.log` calls with the `dataLayer` object and check the developer console.
 
-
 ## Webhook client
 
 As a first step, set up [server-side GTM](https://developers.google.com/tag-platform/tag-manager/server-side). [This article by Simo Ahava's](https://www.simoahava.com/analytics/server-side-tagging-google-tag-manager/) might help as well. Then:
 
-### In shopify
+### In Shopify
 
 Go to _Settings_ > _Notifications_ > _Webhooks_ > _Create webhook_ and add the following webhook:
 
 ![Screenshot of the Add webhook dialog in Shopify's Settings](shopify-webhook.png)
 
 Note the `/swh` at the end.
+
+### In the Shopify theme
+
+Discuss with your developer what the best place would be for the script in `shopify-assets-custom.js` and have them add it. This script reads GA4, Google Ads and Facebook IDs and stores those as cart note attributes. This enables GA4 to link the server-side `purchase` events to the visitor's previous session and advertising campaigns.
+
+> [!IMPORTANT]
+> Make sure to replace `_ga_5311K1XXHW` with the cookie name from your GA4 setup. You can find this in your browser's developers tools or wherever you get your cookies.
 
 ### In the server-side GTM container
 
@@ -75,7 +81,7 @@ Note the `/swh` at the end.
 
 ### How to test
 
-I have used a free [Webhook Relay](https://webhookrelay.com/) account to temporarily add the `X-Gtm-Server-Preview` using the following transformation:
+I use a free [Webhook Relay](https://webhookrelay.com/) account to temporarily add the `X-Gtm-Server-Preview` using the following transformation:
 
 ```lua
 local shopifyTest = r.RequestHeader["X-Shopify-Test"]
